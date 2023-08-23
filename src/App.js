@@ -3,13 +3,13 @@ import "./App.css";
 // import axios from "axios";
 import list from "./postsList.json";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowUp} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [postsData, setPostsData] = useState([]);
   const [tags, setTags] = useState([]);
-  const [tagSearch, setTagSearch] = useState('');
+  const [tagSearch, setTagSearch] = useState("");
   // altered list info
 
   useEffect(() => {
@@ -51,23 +51,17 @@ function App() {
     setPostsData(newList);
     console.log(newList);
     setTags(tagList);
-
-
-
   }, []);
 
-   const handleCategoryChange = (e) => {
-    setTagSearch(e.target.value);
-    console.log(tagSearch)
-  }
+  // ! LOGIC FOR DROWNDOWN SEARCH!
+  const handleCategoryChange = () => {
+    const select = document.getElementById("select").value;
+    setTagSearch(select);
+  };
 
   useEffect(() => {
-   handleCategoryChange()
-  }, [tagSearch])
-
-
-
-  
+    handleCategoryChange();
+  }, [tagSearch]);
 
   // get data function | axios
   // const getData = () => {
@@ -79,20 +73,26 @@ function App() {
   // useEffect(() => {
   //   getData();
   // }, []);
+  // ! LOGIC FOR DROWNDOWN SEARCH!
+  let updatedList = list.filter((item) => {
+    return item.tag === tagSearch;
+  });
 
   return (
     <div className="App">
       <div className="main-container">
         <div className="title">
           <h1>Testing Dropdown Search Feature</h1>
-          <select
-          onChange={handleCategoryChange}
-          >
+          <select id="select" onChange={handleCategoryChange}>
             <option value="" disabled selected>
               Select your color
             </option>
             {tags.map((item) => {
-              return <option value={item}>{item}</option>;
+              return (
+                <option id={item} key={item} value={item}>
+                  {item}
+                </option>
+              );
             })}
           </select>
         </div>
@@ -110,17 +110,30 @@ function App() {
         >
           <div id="top"></div>{" "}
           <div className="results-container">
-            {postsData.map((item) => {
-              return (
-                <Cards
-                  color={item.tag}
-                  key={item.id}
-                  title={item.title}
-                  body={item.body}
-                  tag={item.tag}
-                />
-              );
-            })}
+            {/* {// ! LOGIC FOR DROWNDOWN SEARCH!} */}
+            {tagSearch
+              ? updatedList.map((item) => {
+                  return (
+                    <Cards
+                      color={item.tag}
+                      key={item.id}
+                      title={item.title}
+                      body={item.body}
+                      tag={item.tag}
+                    />
+                  );
+                })
+              : postsData.map((item) => {
+                  return (
+                    <Cards
+                      color={item.tag}
+                      key={item.id}
+                      title={item.title}
+                      body={item.body}
+                      tag={item.tag}
+                    />
+                  );
+                })}
           </div>
         </InfiniteScroll>
         {/* </div> */}
